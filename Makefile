@@ -1,27 +1,18 @@
 CXX = g++
-CXXFLAGS = -Wall -Werror -std=c++17 -Isrc/include
+CXXFLAGS = -Wall -Wno-deprecated-declarations -std=c++17 -Isrc/include
 
-SRC_DIR = src
-BIN_DIR = bin
+TARGET = bin/main.exe
+SOURCES = src/Main.cpp src/ImageIO.cpp src/Quadtree.cpp src/ImageCompressor.cpp src/ErrorMeasurement.cpp src/SaveGif.cpp
 
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%.o,$(SOURCES))
-TARGET = $(BIN_DIR)/main
+all:
+	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET)
 
-all: $(TARGET)
-	@echo "Build complete."
-	@echo "Run with: ./$(TARGET)"
-
-$(TARGET): $(OBJECTS) | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lfreeimage
-
-$(BIN_DIR):
-	mkdir -p $(BIN_DIR)
-
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+run: all
+ifeq ($(OS),Windows_NT)
+	cls && $(TARGET)
+else
+	clear && ./$(TARGET)
+endif
 
 clean:
-	rm -rf $(BIN_DIR)/*.o $(TARGET)
-
-.PHONY: all clean
+	rm -f $(TARGET)
